@@ -2,7 +2,7 @@
 #include "Camara.h"
 int main() {
     Camara cam;
-    cam.configurar(3,60,500,500,
+    cam.configurar(3,60,600,500,
                    vec3(3,5,50),
                    vec3(0,0,0),
                    vec3(0,1,0));

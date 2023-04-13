@@ -10,9 +10,11 @@
 class Objeto {
 public:
     vec3 color;
-    Objeto(vec3 col):color{col}{}
+    float kd; // constante de difusion
 
-    virtual bool intersectar(Rayo ray, float &t)=0;
+    Objeto(vec3 col, float kd=1):color{col}, kd{kd}{}
+
+    virtual bool intersectar(Rayo ray, float &t, vec3 &normal)=0;
 };
 
 class Esfera : public Objeto {
@@ -20,18 +22,23 @@ public:
     vec3 centro;
     float radio;
 
-    Esfera(vec3 cen, float r, vec3 col): centro{cen}, radio{r}, Objeto(col) {}
+    Esfera(vec3 cen, float r, vec3 col, float kd=1): centro{cen}, radio{r}, Objeto(col, kd) {}
 
-    bool intersectar(Rayo ray, float &t) {
+    bool intersectar(Rayo ray, float &t, vec3 &normal) {
         auto _a = ray.dir.punto(ray.dir);
         auto _b = 2*ray.dir.punto(ray.ori-centro);
         auto _c = (ray.ori-centro).punto(ray.ori-centro)-radio*radio;
         auto D = _b*_b-4*_a*_c;
-        if(D <= 0) {return false;}
+        if(D <= 0) {return false;}  // no hay intersección
         float t1 = (-_b + sqrt(D))/2*_a;
         float t2 = (-_b - sqrt(D))/2*_a;
-        t = std::fmin(t1, t2);
+        t = std::fmin(t1, t2);  // la distancia mas corta de impacto
         if(t <= 0) {return false;}
+
+        // Obtener vector normal del Punto de Intersección (pi)
+        vec3 pi = ray.ori + ray.dir * t;
+        normal = pi - centro;
+        normal.normalize();
         return true;
 
     }

@@ -5,6 +5,7 @@
 #ifndef CG2023_VEC3_H
 #define CG2023_VEC3_H
 #include <cmath>
+#include <algorithm>
 
 class vec3 {
 public:
@@ -39,7 +40,7 @@ public:
         return sqrt(x*x + y*y + z*z);
     }
     void max_to_one() {
-        float max_value = std::fmax(x, std::fmax(y,z));
+        float max_value = std::max(x, std::max(y,z));
         if (max_value > 1.0){
             x = x / max_value;
             y = y / max_value;

@@ -5,6 +5,7 @@
 #include "Camara.h"
 #include "Luz.h"
 #include <vector>
+#include <time.h>
 
 void Camara::configurar(float _near, float fov, int ancho, int alto,
                 vec3 pos_eye, vec3 center, vec3 up) {
@@ -20,7 +21,7 @@ void Camara::configurar(float _near, float fov, int ancho, int alto,
     xe.normalize();
     ye = ze.cruz(xe);
 }
-void Camara::renderizar() {
+void Camara::renderizar(int num) {
     Rayo rayo;
     rayo.ori = eye;
     vec3 dir;
@@ -36,6 +37,22 @@ void Camara::renderizar() {
     objetos.emplace_back(new Esfera(vec3(-10,0,0), 8, vec3(0,1,0), 0.8));
     objetos.emplace_back(new Esfera(vec3(0,10,0), 8, vec3(1,0,0), 0.6));
 
+    srand (time(NULL));
+    int magicUnit;
+    for (int i = 0; i < 100; i++) {
+        auto color = vec3((rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0);
+        color.max_to_one();
+        int coin = rand() % 2;
+
+        if (coin == 1) {
+            magicUnit = -1 * coin;
+        } else {
+            // if coin is 0 set magicUnit to 1
+            magicUnit = 1;
+        }
+        objetos.emplace_back(new Esfera(vec3((rand() % 50)*magicUnit,(rand() % 30)-20,(rand() % 70)-50), (rand() % 6)+2, color, 1));
+    }
+
     Luz luz(vec3(10, 10, 10), vec3(1, 1, 1)); // Luz(posición, color)
 
     bool hay_interseccion;
@@ -50,18 +67,32 @@ void Camara::renderizar() {
             rayo.dir = dir;
 
             color.set(0,0,0);
-            if (esf.intersectar(rayo, t, normal)) {
-                color = esf.color;
+            hay_interseccion = false;
+            t = 1000000000;
+            for (auto pObj : objetos) {
+                if (pObj->intersectar(rayo, t_tmp, normal_tmp)) {
+                    hay_interseccion = true;
+                    if (t_tmp < t) {
+                        t = t_tmp;
+                        normal = normal_tmp;
+                        pObjeto = pObj;
+                    }
+                }
+            }
+
+            if (hay_interseccion) {
+                color = pObjeto->color;
                 vec3 pi = rayo.ori + rayo.dir * t;
                 vec3 L = luz.pos - pi;
                 L.normalize();
                 vec3 luz_ambiente = vec3(1,1,1) * 0.2;
                 vec3 luz_difusa = vec3(0,0,0);
                 float factor_difuso = normal.punto(L);
-                if (factor_difuso > 0)
+                if (factor_difuso > 0) {
                     luz_difusa = luz.color * esf.kd * factor_difuso;
-                color = esf.color * (luz_ambiente + luz_difusa);
-
+                }
+                color = pObjeto->color * (luz_ambiente + luz_difusa);
+                color.max_to_one();
             }
 
             // Direccion rayo intersecta esf

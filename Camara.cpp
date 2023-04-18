@@ -33,10 +33,12 @@ void Camara::renderizar(int num) {
     esf.kd = 0.8;
 
     std::vector<Objeto*> objetos;
-//    objetos.emplace_back(new Esfera(vec3(10,0,0), 8, vec3(0,0,1), 1));
-//    objetos.emplace_back(new Esfera(vec3(-10,0,0), 8, vec3(0,1,0), 0.8));
-//    objetos.emplace_back(new Esfera(vec3(0,10,0), 8, vec3(1,0,0), 0.6));
+    objetos.emplace_back(new Esfera(vec3(10,0,0), 8, vec3(0,0,1), 1));
+    objetos.emplace_back(new Esfera(vec3(-10,0,0), 8, vec3(0,1,0), 0.8));
+    objetos.emplace_back(new Esfera(vec3(0,10,0), 8, vec3(1,0,0), 0.6));
 
+    // Generate Random spheres
+    /*
     srand (time(NULL));
     int magicUnit;
     for (int i = 0; i < 100; i++) {
@@ -52,6 +54,7 @@ void Camara::renderizar(int num) {
         }
         objetos.emplace_back(new Esfera(vec3((rand() % 50)*magicUnit,(rand() % 30)-20,(rand() % 70)-50), (rand() % 6)+2, color, 1));
     }
+    */
 
     Luz luz(vec3(10, 10, 10), vec3(1, 1, 1)); // Luz(posición, color)
 
@@ -95,7 +98,7 @@ void Camara::renderizar(int num) {
                 color.max_to_one();
             }
 
-            // Direccion rayo intersecta esf
+            // Direccion donde el rayo intersecta en esfera
 //            if (esf.intersectar(rayo, t) && !foundIntersec) {
 //                std::cout << rayo.dir.x << ", "<< rayo.dir.y << ", " << rayo.dir.z << "\n";
 //                auto piEsf = eye + (rayo.dir * t);
@@ -110,8 +113,11 @@ void Camara::renderizar(int num) {
     }
     dis_img.render((*pImg));
     dis_img.paint();
+    /*
     while (!dis_img.is_closed()) {
         dis_img.wait();
     }
-
+    */
+    std::string nombre_archivo = "image" + std::to_string(num) + ".bmp";
+    pImg->save(nombre_archivo.c_str());
 }

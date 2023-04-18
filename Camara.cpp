@@ -33,9 +33,9 @@ void Camara::renderizar(int num) {
     esf.kd = 0.8;
 
     std::vector<Objeto*> objetos;
-    objetos.emplace_back(new Esfera(vec3(10,0,0), 8, vec3(0,0,1), 1));
-    objetos.emplace_back(new Esfera(vec3(-10,0,0), 8, vec3(0,1,0), 0.8));
-    objetos.emplace_back(new Esfera(vec3(0,10,0), 8, vec3(1,0,0), 0.6));
+//    objetos.emplace_back(new Esfera(vec3(10,0,0), 8, vec3(0,0,1), 1));
+//    objetos.emplace_back(new Esfera(vec3(-10,0,0), 8, vec3(0,1,0), 0.8));
+//    objetos.emplace_back(new Esfera(vec3(0,10,0), 8, vec3(1,0,0), 0.6));
 
     srand (time(NULL));
     int magicUnit;

@@ -10,9 +10,15 @@
 class Objeto {
 public:
     vec3 color;
-    float kd; // constante de difusion
+    float kd, ks, n; // kd: cte de difusion, ks: cte especular
 
     Objeto(vec3 col, float kd=1):color{col}, kd{kd}{}
+
+    void setConstantes(float kd=1, float ks=1, float n=8) {
+        this->kd = kd;
+        this->ks = ks;
+        this->n = n;
+    }
 
     virtual bool intersectar(Rayo ray, float &t, vec3 &normal)=0;
 };

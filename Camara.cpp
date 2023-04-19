@@ -33,9 +33,18 @@ void Camara::renderizar(int num) {
     esf.kd = 0.8;
 
     std::vector<Objeto*> objetos;
-    objetos.emplace_back(new Esfera(vec3(10,0,0), 8, vec3(0,0,1), 1));
-    objetos.emplace_back(new Esfera(vec3(-10,0,0), 8, vec3(0,1,0), 0.8));
-    objetos.emplace_back(new Esfera(vec3(0,10,0), 8, vec3(1,0,0), 0.6));
+    Objeto *p1;
+    p1 = new Esfera(vec3(10,0,0), 8, vec3(0,0,1));
+    p1->setConstantes(1, 0); // (kd, ks)
+    objetos.emplace_back(p1);
+
+    p1 = new Esfera(vec3(-10,0,0), 8, vec3(0,1,0));
+    p1->setConstantes(0.8, 0.2);
+    objetos.emplace_back(p1);
+
+    p1 = new Esfera(vec3(0,10,0), 8, vec3(1,0,0));
+    p1->setConstantes(0.6, 0.4, 32);
+    objetos.emplace_back(p1);
 
     // Generate Random spheres
     /*
@@ -56,7 +65,7 @@ void Camara::renderizar(int num) {
     }
     */
 
-    Luz luz(vec3(10, 10, 10), vec3(1, 1, 1)); // Luz(posición, color)
+    Luz luz(vec3(30, 30, 30), vec3(1, 1, 1)); // Luz(posición, color)
 
     bool hay_interseccion;
     float t, t_tmp;
@@ -84,7 +93,6 @@ void Camara::renderizar(int num) {
             }
 
             if (hay_interseccion) {
-                color = pObjeto->color;
                 vec3 pi = rayo.ori + rayo.dir * t;
                 vec3 L = luz.pos - pi;
                 L.normalize();
@@ -94,7 +102,17 @@ void Camara::renderizar(int num) {
                 if (factor_difuso > 0) {
                     luz_difusa = luz.color * esf.kd * factor_difuso;
                 }
-                color = pObjeto->color * (luz_ambiente + luz_difusa);
+                // color = pObjeto->color * (luz_ambiente + luz_difusa);
+
+                // Luz especular
+                vec3 luz_especular = vec3(0, 0, 0);
+                vec3 R = 2 * (L.punto(normal)) * normal - L;
+                vec3 V = -rayo.dir;
+                float factor_especular = R.punto(V);
+                if (factor_especular > 0) {
+                    luz_especular = luz.color * pObjeto->ks * pow(factor_especular, pObjeto->n);
+                }
+                color = pObjeto->color * (luz_ambiente + luz_difusa + luz_especular);
                 color.max_to_one();
             }
 

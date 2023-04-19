@@ -34,6 +34,7 @@ void Camara::renderizar(int num) {
 
     std::vector<Objeto*> objetos;
     Objeto *p1;
+    /*
     p1 = new Esfera(vec3(10,0,0), 8, vec3(0,0,1));
     p1->setConstantes(1, 0); // (kd, ks)
     objetos.emplace_back(p1);
@@ -45,12 +46,11 @@ void Camara::renderizar(int num) {
     p1 = new Esfera(vec3(0,10,0), 8, vec3(1,0,0));
     p1->setConstantes(0.6, 0.4, 32);
     objetos.emplace_back(p1);
-
+    */
     // Generate Random spheres
-    /*
     srand (time(NULL));
     int magicUnit;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 50; i++) {
         auto color = vec3((rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0);
         color.max_to_one();
         int coin = rand() % 2;
@@ -61,9 +61,11 @@ void Camara::renderizar(int num) {
             // if coin is 0 set magicUnit to 1
             magicUnit = 1;
         }
-        objetos.emplace_back(new Esfera(vec3((rand() % 50)*magicUnit,(rand() % 30)-20,(rand() % 70)-50), (rand() % 6)+2, color, 1));
+        p1 = new Esfera(vec3((rand() % 50)*magicUnit,(rand() % 30)-20,(rand() % 70)-50), (rand() % 6)+2, color);
+        p1->setConstantes(0.8, 0.8, 8);
+        objetos.emplace_back(p1);
     }
-    */
+    // End Generate Random Spheres
 
     Luz luz(vec3(30, 30, 30), vec3(1, 1, 1)); // Luz(posición, color)
 

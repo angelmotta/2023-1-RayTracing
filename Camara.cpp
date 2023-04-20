@@ -99,23 +99,38 @@ void Camara::renderizar(int num) {
                 vec3 L = luz.pos - pi;
                 L.normalize();
                 vec3 luz_ambiente = vec3(1,1,1) * 0.2;
-                vec3 luz_difusa = vec3(0,0,0);
-                float factor_difuso = normal.punto(L);
-                if (factor_difuso > 0) {
-                    luz_difusa = luz.color * esf.kd * factor_difuso;
+                // Determinar si hay sombra
+                bool hay_sombra = false;
+                Rayo rayo_sombra;
+                rayo_sombra.ori = pi;
+                rayo_sombra.dir = L;    // rayo en direccion hacia la luz
+                for (auto pObj : objetos) {
+                    if (pObj->intersectar(rayo_sombra, t_tmp, normal_tmp)) {
+                        hay_sombra = true;
+                    }
                 }
-                // color = pObjeto->color * (luz_ambiente + luz_difusa);
+                // End Determinar si hay sombra
+                if (!hay_sombra) {
+                    vec3 luz_difusa = vec3(0,0,0);
+                    float factor_difuso = normal.punto(L);
+                    if (factor_difuso > 0) {
+                        luz_difusa = luz.color * esf.kd * factor_difuso;
+                    }
+                    // color = pObjeto->color * (luz_ambiente + luz_difusa);
 
-                // Luz especular
-                vec3 luz_especular = vec3(0, 0, 0);
-                vec3 R = 2 * (L.punto(normal)) * normal - L;
-                vec3 V = -rayo.dir;
-                float factor_especular = R.punto(V);
-                if (factor_especular > 0) {
-                    luz_especular = luz.color * pObjeto->ks * pow(factor_especular, pObjeto->n);
+                    // Luz especular
+                    vec3 luz_especular = vec3(0, 0, 0);
+                    vec3 R = 2 * (L.punto(normal)) * normal - L;
+                    vec3 V = -rayo.dir;
+                    float factor_especular = R.punto(V);
+                    if (factor_especular > 0) {
+                        luz_especular = luz.color * pObjeto->ks * pow(factor_especular, pObjeto->n);
+                    }
+                    color = pObjeto->color * (luz_ambiente + luz_difusa + luz_especular);
+                    color.max_to_one();
+                } else {
+                    color = pObjeto->color * (luz_ambiente);    // poner sombra
                 }
-                color = pObjeto->color * (luz_ambiente + luz_difusa + luz_especular);
-                color.max_to_one();
             }
 
             // Direccion donde el rayo intersecta en esfera

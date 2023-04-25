@@ -34,20 +34,21 @@ void Camara::renderizar(int num) {
 
     std::vector<Objeto*> objetos;
     Objeto *p1;
-    /*
+
     p1 = new Esfera(vec3(10,0,0), 8, vec3(0,0,1));
     p1->setConstantes(1, 0); // (kd, ks)
     objetos.emplace_back(p1);
 
-    p1 = new Esfera(vec3(-10,0,0), 8, vec3(0,1,0));
+    p1 = new Esfera(vec3(-10,-10,-10), 8, vec3(0,1,0));
     p1->setConstantes(0.8, 0.2);
     objetos.emplace_back(p1);
 
-    p1 = new Esfera(vec3(0,10,0), 8, vec3(1,0,0));
-    p1->setConstantes(0.6, 0.4, 32);
+    p1 = new Esfera(vec3(0,10,0), 1, vec3(0.123,0.456,0.789));
+    p1->setConstantes(0.9, 0.1);
     objetos.emplace_back(p1);
-    */
+
     // Generate Random spheres
+    /*
     srand (time(NULL));
     int magicUnit;
     for (int i = 0; i < 50; i++) {
@@ -65,6 +66,7 @@ void Camara::renderizar(int num) {
         p1->setConstantes(0.8, 0.8, 8);
         objetos.emplace_back(p1);
     }
+    */
     // End Generate Random Spheres
 
     Luz luz(vec3(30, 30, 30), vec3(1, 1, 1)); // Luz(posición, color)
@@ -102,7 +104,7 @@ void Camara::renderizar(int num) {
                 // Determinar si hay sombra
                 bool hay_sombra = false;
                 Rayo rayo_sombra;
-                rayo_sombra.ori = pi;
+                rayo_sombra.ori = pi + 0.0005 * normal;
                 rayo_sombra.dir = L;    // rayo en direccion hacia la luz
                 for (auto pObj : objetos) {
                     if (pObj->intersectar(rayo_sombra, t_tmp, normal_tmp)) {

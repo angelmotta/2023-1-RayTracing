@@ -9,6 +9,8 @@
 #include "vec3.h"
 #include "CImg.h"
 #include "Objeto.h"
+#include "Luz.h"
+#include <vector>
 
 //using namespace cimg_library;
 typedef unsigned char BYTE;
@@ -17,11 +19,13 @@ class Camara {
     vec3 eye, xe, ye, ze;
     float f, a, b, w, h;
     cimg_library::CImg<BYTE> *pImg;
+    int prof_max;
 public:
+    Camara() { prof_max = 3;}
     void configurar(float _near, float fov, int ancho, int alto,
                     vec3 pos_eye, vec3 center, vec3 up);
     void renderizar(int num=1);
-
+    vec3 calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector<Luz*> luces, int prof);
 };
 
 

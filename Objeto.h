@@ -11,8 +11,8 @@ class Objeto {
 public:
     vec3 color;
     float kd, ks, n; // kd: cte de difusion, ks: cte especular
-
-    Objeto(vec3 col, float kd=1):color{col}, kd{kd}{}
+    float ke;    // ke: constante espejo
+    Objeto(vec3 col, float kd=1):color{col}, kd{kd}{ ke = 0;}
 
     void setConstantes(float kd=1, float ks=1, float n=8) {
         this->kd = kd;

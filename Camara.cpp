@@ -55,26 +55,27 @@ void Camara::renderizar(int num) {
     p1->ke = 0.5;
     objetos.emplace_back(p1);
 
-    // Generate Random spheres
+    // Begin Generate Random spheres
     /*
     srand (time(NULL));
     int magicUnit;
     for (int i = 0; i < 50; i++) {
         auto color = vec3((rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0);
         color.max_to_one();
-        int coin = rand() % 2;
+        int coin = rand() % 2; // coin: [0, 1]
 
         if (coin == 1) {
-            magicUnit = -1 * coin;
+            magicUnit = -1 * coin; // set magicUnit = -1
         } else {
             // if coin is 0 set magicUnit to 1
             magicUnit = 1;
         }
         p1 = new Esfera(vec3((rand() % 50)*magicUnit,(rand() % 30)-20,(rand() % 70)-50), (rand() % 6)+2, color);
-        p1->setConstantes(0.8, 0.8, 8);
+        p1->setConstantes(0.8, 0.8);
+        p1->ke = 0.8;
         objetos.emplace_back(p1);
     }
-    */
+     */
     // End Generate Random Spheres
 
     Luz luz(vec3(30, 30, 30), vec3(1, 1, 1)); // Luz(posición, color)
@@ -112,8 +113,9 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
     vec3 normal, normal_tmp;
     Objeto *pObjeto = nullptr;
     bool hay_interseccion = false;
-    float t_tmp;
-    float t = 1000000000;
+    float t_tmp, t = 1000000000;
+    bool update_pObjeto = false;
+    int idxObj = 0;
 
     for (auto pObj : objetos) {
         if (pObj->intersectar(rayo, t_tmp, normal_tmp)) {
@@ -122,8 +124,10 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
                 t = t_tmp;
                 normal = normal_tmp;
                 pObjeto = pObj;
+                update_pObjeto = true;
             }
         }
+        idxObj++;
     }
 
     if (hay_interseccion) {

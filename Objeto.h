@@ -38,7 +38,7 @@ public:
         if(D <= 0) {return false;}  // no hay intersección
         float t1 = (-_b + sqrt(D))/2*_a;
         float t2 = (-_b - sqrt(D))/2*_a;
-        t = std::fmin(t1, t2);  // la distancia mas corta de impacto
+        t = std::min(t1, t2);  // la distancia mas corta de impacto
         if(t <= 0) {return false;}
 
         // Obtener vector normal del Punto de Intersección (pi)

@@ -5,7 +5,7 @@
 #include "Camara.h"
 #include "Luz.h"
 #include <vector>
-#include <time.h>
+#include <iostream>
 
 void Camara::configurar(float _near, float fov, int ancho, int alto,
                 vec3 pos_eye, vec3 center, vec3 up) {
@@ -137,7 +137,9 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
         idxObj++;
     }
 
-    if (hay_interseccion) {
+    if (hay_interseccion and pObjeto->es_luz) {
+        color = pObjeto->color;
+    } else if (hay_interseccion) {
         vec3 pi = rayo.ori + rayo.dir * t; // pi: Punto de Interseccion
         vec3 V = -rayo.dir;
         if (pObjeto->es_transparente) {
@@ -180,13 +182,18 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
         }
 
         vec3 L = luces[0]->pos - pi;
+        float distancia = L.modulo();
         L.normalize();
         vec3 luz_ambiente = vec3(1,1,1) * 0.2;
         // Determinar si hay sombra
         bool hay_sombra = false;
         Rayo rayo_sombra(pi + 0.0005 * normal, L);    // rayo en direccion hacia la luz
         for (auto pObj : objetos) {
-            if (pObj->intersectar(rayo_sombra, t_tmp, normal_tmp)) {
+            if ((not pObj->es_luz)
+            and (not pObj->es_transparente)
+            and pObj->intersectar(rayo_sombra, t_tmp, normal_tmp)
+            and t_tmp < distancia
+            ) {
                 hay_sombra = true;
             }
         }
@@ -209,6 +216,7 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
         } else {
             // Hay sombra
             color = color + pObjeto->color * (luz_ambiente);    // poner sombra
+            color.max_to_one();
         }
     }
     return color;
@@ -265,6 +273,9 @@ void Camara::renderizar(std::vector<Objeto*> &objetos, std::vector<Luz*> &luces,
     vec3 color, dir;
     for(int x = 0;  x < w; x++) {
         for (int y = 0; y < h; y++) {
+            if (x == 190 and y == h - 398) {
+                std::cout << "stop";
+            }
             dir = ze * (-f) + ye * a * (y / h - 0.5) + xe * b * (x / w - 0.5);
             dir.normalize();
             rayo.dir = dir;

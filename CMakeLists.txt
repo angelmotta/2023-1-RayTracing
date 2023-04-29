@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(CG2023)
+project(MyCG2023)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS -I/opt/X11/include)

@@ -14,7 +14,12 @@ public:
     float ke;    // ke: constante espejo
     bool es_transparente;
     float ior; // Index of Refraction
-    Objeto(vec3 col, float kd=1):color{col}, kd{kd}{ ke = 0; es_transparente=false; ior=1; }
+    bool es_luz;
+
+    Objeto(vec3 col, float kd=1):color{col}, kd{kd}{
+        ke = 0; es_transparente=false; ior=1;
+        es_luz = false;
+    }
 
     void setConstantes(float kd=1, float ks=1, float n=8) {
         this->kd = kd;

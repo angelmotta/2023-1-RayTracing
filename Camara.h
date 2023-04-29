@@ -26,6 +26,9 @@ public:
                     vec3 pos_eye, vec3 center, vec3 up);
     void renderizar(int num=1);
     vec3 calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector<Luz*> luces, int prof);
+
+    vec3 refract(vec3 &I, vec3 &N, float &ior);
+    void fresnel(vec3 &I, vec3 &N, float &ior, float &kr);
 };
 
 

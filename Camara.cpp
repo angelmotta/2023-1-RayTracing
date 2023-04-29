@@ -40,14 +40,18 @@ void Camara::renderizar(int num) {
     p1->ke = 1; // cte espejo (cte reflexion)
     objetos.emplace_back(p1);
 
-    p1 = new Esfera(vec3(-10,-10,-10), 8, vec3(0,1,0));
+    p1 = new Esfera(vec3(10,0,20), 8, vec3(0.1,0.1,0.1));
     p1->setConstantes(0.8, 0.2);
     p1->ke = 0.9;
+    p1->es_transparente = true;
+    p1->ior = 1.5;
     objetos.emplace_back(p1);
 
-    p1 = new Esfera(vec3(0,10,0), 1, vec3(0.123,0.456,0.789));
-    p1->setConstantes(0.9, 0.1);
+    p1 = new Esfera(vec3(0,10,0), 8, vec3(0,0,0));
+    p1->setConstantes(0.6, 0.4, 32);
     p1->ke = 0.8;
+    p1->es_transparente = false;
+    p1->ior = 1.2;
     objetos.emplace_back(p1);
 
     p1 = new Plano(vec3(0,1,0), 1, vec3(0.123, 0.456, 0.789));
@@ -55,6 +59,9 @@ void Camara::renderizar(int num) {
     p1->ke = 0.5;
     objetos.emplace_back(p1);
 
+    p1 = new Cilindro(vec3(-10, 0, 0), vec3(-10, 10, 0), 5, vec3(0, 1, 1));
+    p1->setConstantes(0.7, 0.3, 8);
+    objetos.emplace_back(p1);
     // Begin Generate Random spheres
     /*
     srand (time(NULL));
@@ -163,17 +170,47 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
             }
             color = pObjeto->color * (luz_ambiente + luz_difusa + luz_especular);
 
-            // Verficar si es posible continuar con la recursion
-            if (pObjeto->ke > 0 and prof + 1 <= prof_max) {
-                // rayos reflexivos
-                Rayo rayo_reflexivo;
-                rayo_reflexivo.ori = pi + 0.0005 * normal;
-                rayo_reflexivo.dir = 2 * (V.punto(normal)) * normal - V;
-                // Recursive call
-                vec3 color_reflexivo = calcular_color(rayo_reflexivo, objetos, luces, prof + 1);
-                color = color + pObjeto->ke * color_reflexivo;
-            }
+            if (pObjeto->es_transparente) {
+                // kr kt
+                vec3 refractionColor(0, 0, 0);
+                // compute fresnel
+                float kr;
+                fresnel(rayo.dir, normal, pObjeto->ior, kr);
+                bool outside = rayo.dir.punto(normal) < 0;
+                vec3 bias = 0.005 * normal;
+                // Compute refraction if it is not a case of total internal reflection
+                if (kr < 1) {
+                    vec3 refractionDirection = refract(rayo.dir, normal, pObjeto->ior);
+                    refractionDirection.normalize();
+                    vec3 refractionRayOrig = outside ? pi - bias : pi + bias;
+                    Rayo rayo_refraccion(refractionRayOrig, refractionDirection);
+                    refractionColor = calcular_color(rayo_refraccion, objetos, luces, prof + 1);
+                }
 
+                vec3 reflectionDirection = 2 * (V.punto(normal)) * normal - V; // reflect(dir, normal).normalize();
+                reflectionDirection.normalize();
+                vec3 reflectionRayOrig = outside ? pi + bias : pi - bias;
+                Rayo rayo_reflexivo;
+                rayo_reflexivo.ori = reflectionRayOrig;
+                rayo_reflexivo.dir = reflectionDirection;
+                vec3 reflectionColor = calcular_color(rayo_reflexivo, objetos, luces, prof + 1);
+
+                // mix the two
+                color = color + reflectionColor * kr + refractionColor * (1 - kr);
+            }
+            else {
+                // Verficar si es posible continuar con la recursion
+                if (pObjeto->ke > 0 and prof + 1 <= prof_max) {
+                    // rayos reflexivos
+                    Rayo rayo_reflexivo;
+                    rayo_reflexivo.ori = pi + 0.0005 * normal;
+                    rayo_reflexivo.dir = 2 * (V.punto(normal)) * normal - V;
+                    rayo_reflexivo.dir.normalize();
+                    // Recursive call
+                    vec3 color_reflexivo = calcular_color(rayo_reflexivo, objetos, luces, prof + 1);
+                    color = color + pObjeto->ke * color_reflexivo;
+                }
+            }
             color.max_to_one();
         } else {
             // Hay sombra
@@ -188,4 +225,41 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
 //                std::cout << piEsf.x << ", " << piEsf.y << ", " << piEsf.z << "\n";
 //                foundIntersec = true;
 //            }
+}
+
+vec3 Camara::refract(vec3 &I, vec3 &N, float &ior) {
+    float cosi = clamp(-1, 1, I.punto(N));
+    float etai = 1, etat = ior;
+    vec3 n = N;
+    if (cosi < 0) {
+        cosi = -cosi;
+    } else {
+        std::swap(etai, etat);
+        n = -N;
+    }
+    float eta = etai / etat;
+    float k = 1 - eta * eta * (1 - cosi * cosi);
+    return k < 0 ? vec3(0, 0, 0) : eta * I + (eta * cosi - sqrt(k)) * n;
+}
+
+void Camara::fresnel(vec3 &I, vec3 &N, float &ior, float &kr) {
+    float cosi = clamp(-1, 1, I.punto(N));
+    float etai = 1, etat = ior;
+    if (cosi > 0) {
+        std::swap(etai, etat);
+    }
+    // Compute sini using Snell's Law
+    float sint = etai / etat * sqrt(std::max(0.f, 1 - cosi * cosi));
+    // Total Internal reflection
+    if (sint >= 1) {
+        kr = 1;
+    } else {
+        float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+        cosi = fabsf(cosi);
+        float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+        float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+        kr = (Rs * Rs + Rp * Rp) / 2;
+    }
+    // As a consequence of the conservation of energy, the transmittance is given by:
+    // kt = 1 - kr;
 }

@@ -7,6 +7,10 @@
 #include <cmath>
 #include <algorithm>
 
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 class vec3 {
 public:
     float x, y, z;
@@ -50,6 +54,7 @@ public:
     }
 };
 
+float clamp(float menor, float mayor, float valor);
 vec3 operator*(float f, vec3 v);
 
 #endif //CG2023_VEC3_H

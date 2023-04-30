@@ -113,6 +113,13 @@ void escena2() {
     p1->es_luz = true;
     objetos.emplace_back(p1);
 
+    // Luciernaga [4]
+    vec3 posLuz3(25, 110, 10);
+    vec3 colorLuz3(1, 1, 0);
+    p1 = new Esfera(posLuz3, 3, colorLuz3); // esfera luciernaga
+    p1->es_luz = true;
+    objetos.emplace_back(p1);
+
     // Add Esferas
     p1 = new Esfera(vec3(100, 20, 0), 20, vec3(0, 0, 1));
     p1->setConstantes(1, 0);
@@ -167,6 +174,7 @@ void escena2() {
     float a = 15; // for Z axis [from 15; -15]
 
     Esfera* myFirefly2 = static_cast<Esfera*>(objetos[3]);
+    Esfera* myFirefly3 = static_cast<Esfera*>(objetos[4]);
 
     std::cout << "\n Init myFirefly: x = " << myFirefly->centro.x << ", y = " << myFirefly->centro.y << ", z = " << myFirefly->centro.z << "\n";
     float t = 0;
@@ -190,11 +198,14 @@ void escena2() {
 
         myFirefly->centro.y = r * sin(t);
         myFirefly->centro.y += startY;
+        myFirefly3->centro.y = r * sin(t);
+        myFirefly3->centro.y += 50;
 
         myFirefly->centro.z = a * cos(t);
         myFirefly2->centro.z = a * cos(t);
         std::cout << "\nmyFirefly: t = " <<  t << ", x = " << myFirefly->centro.x << ", y = " << myFirefly->centro.y << ", z = " << myFirefly->centro.z << "\n";
         std::cout << "\nmyFirefly2: t = " <<  t << ", x = " << myFirefly2->centro.x << ", y = " << myFirefly2->centro.y << ", z = " << myFirefly2->centro.z << "\n";
+        std::cout << "\nmyFirefly3: t = " <<  t << ", x = " << myFirefly3->centro.x << ", y = " << myFirefly3->centro.y << ", z = " << myFirefly3->centro.z << "\n";
         cam.renderizar(objetos, luces, n);
 
         t += 0.2;

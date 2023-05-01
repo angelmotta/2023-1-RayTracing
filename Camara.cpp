@@ -149,7 +149,7 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
             float kr;
             fresnel(rayo.dir, normal, pObjeto->ior, kr);
             bool outside = rayo.dir.punto(normal) < 0;
-            vec3 bias = 0.005 * normal;
+            vec3 bias = 0.0005 * normal;
             // Compute refraction if it is not a case of total internal reflection
             if (kr < 1) {
                 vec3 refractionDirection = refract(rayo.dir, normal, pObjeto->ior);
@@ -184,7 +184,7 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
         vec3 L = luces[0]->pos - pi;
         float distancia = L.modulo();
         L.normalize();
-        vec3 luz_ambiente = vec3(1,1,1) * 0.2;
+        vec3 luz_ambiente = vec3(1, 1, 1) * 0.2;
         // Determinar si hay sombra
         bool hay_sombra = false;
         Rayo rayo_sombra(pi + 0.0005 * normal, L);    // rayo en direccion hacia la luz
@@ -192,14 +192,13 @@ vec3 Camara::calcular_color(Rayo rayo, std::vector<Objeto*> objetos, std::vector
             if ((not pObj->es_luz)
             and (not pObj->es_transparente)
             and pObj->intersectar(rayo_sombra, t_tmp, normal_tmp)
-            and t_tmp < distancia
-            ) {
+            and t_tmp < distancia) {
                 hay_sombra = true;
             }
         }
         // End Determinar si hay sombra
         if (!hay_sombra) {
-            vec3 luz_difusa = vec3(0,0,0);
+            vec3 luz_difusa = vec3(0, 0, 0);
             float factor_difuso = normal.punto(L);
             if (factor_difuso > 0) {
                 luz_difusa = luces[0]->color * pObjeto->kd * factor_difuso;
@@ -241,7 +240,7 @@ vec3 Camara::refract(vec3 &I, vec3 &N, float &ior) {
     }
     float eta = etai / etat;
     float k = 1 - eta * eta * (1 - cosi * cosi);
-    return k < 0 ? vec3(0, 0, 0) : eta * I + (eta * cosi - sqrt(k)) * n;
+    return k < 0 ? vec3(0, 0, 0) : eta * I + (eta * cosi - sqrtf(k)) * n;
 }
 
 void Camara::fresnel(vec3 &I, vec3 &N, float &ior, float &kr) {
@@ -281,9 +280,9 @@ void Camara::renderizar(std::vector<Objeto*> &objetos, std::vector<Luz*> &luces,
             rayo.dir = dir;
             color = calcular_color(rayo, objetos, luces, 1);
 
-            (*pImg)(x,h - 1 - y,0) = (BYTE)(color.x * 255);
-            (*pImg)(x,h - 1 - y,1) = (BYTE)(color.y * 255);
-            (*pImg)(x,h - 1 - y,2) = (BYTE)(color.z * 255);
+            (*pImg)(x,h - 1 - y, 0) = (BYTE)(color.x * 255);
+            (*pImg)(x,h - 1 - y, 1) = (BYTE)(color.y * 255);
+            (*pImg)(x,h - 1 - y, 2) = (BYTE)(color.z * 255);
         }
     }
     dis_img.render((*pImg));

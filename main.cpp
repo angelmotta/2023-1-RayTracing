@@ -174,11 +174,15 @@ void escena2() {
     float t = 0;
     float numVueltas = 0;
     float startY = 30.0;
-    for (int y = 1, n = 1; y <= 1; y += 1, n++) {
-        cam.configurar(3, 60, 600, 800,
-                       vec3(0, 30, 700),
-                       vec3(0, 0, 0),
-                       vec3(0, 1, 0));
+    // Initial Setting for camara
+    float camEye_x = 0;
+    float camEye_y = 30;
+    float camEye_z = 425.0;
+    cam.configurar(3, 60, 600, 800,
+                   vec3(camEye_x, camEye_y, camEye_z),
+                   vec3(0, 0, 0),
+                   vec3(0, 1, 0));
+    for (int y = 1, n = 1; y <= 740; y += 1, n++) {
         // 1 vuelta
         if (t > 2 * M_PI) {
             std::cout << "una vuelta..\n";
@@ -206,6 +210,30 @@ void escena2() {
 
         t += 0.1;
         std::cout << "#vueltas: " << numVueltas << "\n";
+
+        // Change camara position for next iteration
+        if (n >= 1 and n <= 100) {
+            // Move z axis [425 -> 375]
+            camEye_z = camEye_z - 0.5;
+            cam.configurar(3, 60, 600, 800,
+                           vec3(camEye_x, camEye_y, camEye_z),
+                           vec3(0, 0, 0),
+                           vec3(0, 1, 0));
+        } else if (n >= 300 and n < 600) {
+            // Move y axis [30 -> 180]
+            camEye_y = camEye_y + 0.5;
+            cam.configurar(3, 60, 600, 800,
+                           vec3(camEye_x, camEye_y, camEye_z),
+                           vec3(0, 0, 0),
+                           vec3(0, 1, 0));
+        } else if (n >= 600 and n <= 740) {
+            // Move x axis [0 -> 70]
+            camEye_x = camEye_x + 0.5;
+            cam.configurar(3, 60, 600, 800,
+                           vec3(camEye_x, camEye_y, camEye_z),
+                           vec3(0, 0, 0),
+                           vec3(0, 1, 0));
+        }
     }
     // End: test circular motion
 }

@@ -82,17 +82,20 @@ void escena2() {
     std::vector<Objeto*> objetos;
     Objeto *p1;
     p1 = new Plano(vec3(0,1,0), 1, vec3(0.123, 0.456, 0.789));
+//    p1 = new Plano(vec3(0,1,0), 1, vec3(0, 0, 0));
     p1->setConstantes(0.9, 0.1);
     p1->ke = 0.3;
     objetos.emplace_back(p1);
 
-    p1 = new Cilindro(vec3(5,0,0), vec3(5,140,0),50, vec3(0.6549,0.8471,0.8706));
+//    p1 = new Cilindro(vec3(5,0,0), vec3(5,140,0),50, vec3(0.6549,0.8471,0.8706));
+    p1 = new Cilindro(vec3(5,0,0), vec3(5,140,0),50, vec3(0,0,0));
     p1->setConstantes(0.1,0.9,8);
     p1->es_transparente = true;
     p1->ior = 1.52;
     objetos.emplace_back(p1);
 
-    p1 = new Cilindro(vec3(6,1,0), vec3(6,138,0),48, vec3(0.6549,0.8471,0.8706));
+    //p1 = new Cilindro(vec3(6,1,0), vec3(6,138,0),48, vec3(0.6549,0.8471,0.8706));
+    p1 = new Cilindro(vec3(6,1,0), vec3(6,138,0),48, vec3(0,0,0));
     p1->setConstantes(0.1,0.9,8);
     p1->es_transparente = true;
     p1->ior = 1.52;
@@ -108,7 +111,7 @@ void escena2() {
     // Luciernaga [4]
     vec3 posLuz1(5, 30, 0);
     vec3 colorLuz1(1, 1, 0);
-    p1 = new Esfera(posLuz1, 3, colorLuz1); // esfera luciernaga
+    p1 = new Esfera(posLuz1, 2, colorLuz1); // esfera luciernaga
     p1->es_luz = true;
     p1->setConstantes(1, 1);
     p1->ke = 1;
@@ -117,14 +120,14 @@ void escena2() {
     // Luciernaga [5]
     vec3 posLuz2(15, 70, 10);
     vec3 colorLuz2(1, 1, 0);
-    p1 = new Esfera(posLuz2, 3, colorLuz2); // esfera luciernaga
+    p1 = new Esfera(posLuz2, 2, colorLuz2); // esfera luciernaga
     p1->es_luz = true;
     objetos.emplace_back(p1);
 
     // Luciernaga [6]
     vec3 posLuz3(25, 110, 10);
     vec3 colorLuz3(1, 1, 0);
-    p1 = new Esfera(posLuz3, 3, colorLuz3); // esfera luciernaga
+    p1 = new Esfera(posLuz3, 2, colorLuz3); // esfera luciernaga
     p1->es_luz = true;
     objetos.emplace_back(p1);
 
@@ -143,8 +146,8 @@ void escena2() {
 //    Luz luz(vec3(30,30,30), vec3(1,1,1));
 //    luces.emplace_back(&luz);
     // Begin Test
-    //Luz *pluz = new Luz(posLuz1, colorLuz1);
-    Luz *pluz = new Luz(vec3(-120, 30, 30), colorLuz1);
+    Luz *pluz = new Luz(posLuz1, colorLuz1);
+//    Luz *pluz = new Luz(vec3(-120, 30, 30), colorLuz1);
     // End Test
     luces.emplace_back(pluz);
 
@@ -159,29 +162,9 @@ void escena2() {
     }
     */
 
-    // Begin My Test 1
-    /*
-    cam.configurar(3, 60, 600, 800,
-                   vec3(1, 120, 500),
-                   vec3(0, 0, 0),
-                   vec3(0, 1, 0));
-
-    cam.renderizar(objetos, luces, 100);
-    // Move firefly
-    Esfera* firefly = static_cast<Esfera*>(objetos[3]);
-    firefly->centro.x = -45;
-    // Generar imagen
-    cam.renderizar(objetos, luces, 101);
-
-    firefly->centro.x = 45;
-    // Generar imagen
-    cam.renderizar(objetos, luces, 102);
-    */
-    // End My Test 1
-
     // Begin: test circular motion
     Esfera* myFirefly = static_cast<Esfera*>(objetos[3]);
-    float r = 20; // used for X and Y axis
+    float r = 10; // used for X and Y axis
     float a = 15; // for Z axis [from 15; -15]
 
     Esfera* myFirefly2 = static_cast<Esfera*>(objetos[4]);
@@ -191,9 +174,9 @@ void escena2() {
     float t = 0;
     float numVueltas = 0;
     float startY = 30.0;
-    for (int y = 1, n = 1; y < 2; y += 2, n++) {
+    for (int y = 1, n = 1; y <= 1; y += 1, n++) {
         cam.configurar(3, 60, 600, 800,
-                       vec3(1, 180, 400),
+                       vec3(0, 30, 700),
                        vec3(0, 0, 0),
                        vec3(0, 1, 0));
         // 1 vuelta
@@ -205,7 +188,9 @@ void escena2() {
         // count vueltas
         numVueltas = t / (2 * M_PI);
         myFirefly->centro.x = r * cos(t);
+        myFirefly->centro.x += 10;
         myFirefly2->centro.x = r * cos(t);
+        myFirefly2->centro.x += 5;
 
         myFirefly->centro.y = r * sin(t);
         myFirefly->centro.y += startY;
@@ -219,7 +204,7 @@ void escena2() {
         std::cout << "\nmyFirefly3: t = " <<  t << ", x = " << myFirefly3->centro.x << ", y = " << myFirefly3->centro.y << ", z = " << myFirefly3->centro.z << "\n";
         cam.renderizar(objetos, luces, n);
 
-        t += 0.2;
+        t += 0.1;
         std::cout << "#vueltas: " << numVueltas << "\n";
     }
     // End: test circular motion

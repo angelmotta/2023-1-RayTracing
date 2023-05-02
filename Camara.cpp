@@ -267,7 +267,7 @@ void Camara::fresnel(vec3 &I, vec3 &N, float &ior, float &kr) {
 
 void Camara::renderizar(std::vector<Objeto*> &objetos, std::vector<Luz*> &luces, int num) {
     pImg = new cimg_library::CImg<BYTE>(w, h, 1, 10);
-    cimg_library::CImgDisplay dis_img((*pImg), "Imagen RayTracing en Perspectiva desde Camara Pinhole");
+    //cimg_library::CImgDisplay dis_img((*pImg), "Imagen RayTracing en Perspectiva desde Camara Pinhole");
     Rayo rayo(eye);
     vec3 color, dir;
     for(int x = 0;  x < w; x++) {
@@ -285,8 +285,8 @@ void Camara::renderizar(std::vector<Objeto*> &objetos, std::vector<Luz*> &luces,
             (*pImg)(x,h - 1 - y, 2) = (BYTE)(color.z * 255);
         }
     }
-    dis_img.render((*pImg));
-    dis_img.paint();
+    //dis_img.render((*pImg));
+    //dis_img.paint();
     std::string nombre_archivo = "imagen" + std::to_string(num) + ".bmp";
     pImg->save(nombre_archivo.c_str());
 }

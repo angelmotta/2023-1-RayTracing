@@ -4,6 +4,7 @@
 
 void escena1();
 void escena2();
+void genRandomSpheres(std::vector<Objeto*> &objetos, int numSpheres);
 
 int main() {
     // Camara cam;
@@ -108,7 +109,7 @@ void escena2() {
 //    p1->ior=1.5;
 //    objetos.emplace_back(p1);
 
-    // Luciernaga [4]
+    // Luciernaga [3]
     vec3 posLuz1(5, 30, 0);
     vec3 colorLuz1(1, 1, 0);
     p1 = new Esfera(posLuz1, 2, colorLuz1); // esfera luciernaga
@@ -117,17 +118,24 @@ void escena2() {
     p1->ke = 1;
     objetos.emplace_back(p1);
 
-    // Luciernaga [5]
+    // Luciernaga [4]
     vec3 posLuz2(15, 70, 10);
     vec3 colorLuz2(1, 1, 0);
     p1 = new Esfera(posLuz2, 2, colorLuz2); // esfera luciernaga
     p1->es_luz = true;
     objetos.emplace_back(p1);
 
-    // Luciernaga [6]
+    // Luciernaga [5]
     vec3 posLuz3(25, 110, 10);
     vec3 colorLuz3(1, 1, 0);
     p1 = new Esfera(posLuz3, 2, colorLuz3); // esfera luciernaga
+    p1->es_luz = true;
+    objetos.emplace_back(p1);
+
+    // Luciernaga [6]
+    vec3 posLuz4(5, 110, 20);
+    vec3 colorLuz4(1, 1, 0);
+    p1 = new Esfera(posLuz4, 2, colorLuz4); // esfera luciernaga
     p1->es_luz = true;
     objetos.emplace_back(p1);
 
@@ -141,6 +149,9 @@ void escena2() {
     p1->setConstantes(1, 0);
     p1->ke = 1;
     objetos.emplace_back(p1);
+
+    // Add random Spheres
+    genRandomSpheres(objetos, 20);
 
     std::vector<Luz*> luces;
 //    Luz luz(vec3(30,30,30), vec3(1,1,1));
@@ -169,6 +180,7 @@ void escena2() {
 
     Esfera* myFirefly2 = static_cast<Esfera*>(objetos[4]);
     Esfera* myFirefly3 = static_cast<Esfera*>(objetos[5]);
+    Esfera* myFirefly4 = static_cast<Esfera*>(objetos[6]);
 
     std::cout << "\n Init myFirefly: x = " << myFirefly->centro.x << ", y = " << myFirefly->centro.y << ", z = " << myFirefly->centro.z << "\n";
     float t = 0;
@@ -200,6 +212,9 @@ void escena2() {
         myFirefly->centro.y += startY;
         myFirefly3->centro.y = r * sin(t);
         myFirefly3->centro.y += 50;
+        myFirefly4->centro.y = r * sin(t);
+        myFirefly4->centro.y += 10;
+
 
         myFirefly->centro.z = a * cos(t);
         myFirefly2->centro.z = a * cos(t);
@@ -219,15 +234,15 @@ void escena2() {
                            vec3(camEye_x, camEye_y, camEye_z),
                            vec3(0, 0, 0),
                            vec3(0, 1, 0));
-        } else if (n >= 300 and n < 600) {
+        } else if (n >= 200 and n < 500) {
             // Move y axis [30 -> 180]
             camEye_y = camEye_y + 0.5;
             cam.configurar(3, 60, 600, 800,
                            vec3(camEye_x, camEye_y, camEye_z),
                            vec3(0, 0, 0),
                            vec3(0, 1, 0));
-        } else if (n >= 600 and n <= 740) {
-            // Move x axis [0 -> 70]
+        } else if (n >= 500 and n <= 740) {
+            // Move x axis [0 -> 120]
             camEye_x = camEye_x + 0.5;
             cam.configurar(3, 60, 600, 800,
                            vec3(camEye_x, camEye_y, camEye_z),
@@ -236,4 +251,33 @@ void escena2() {
         }
     }
     // End: test circular motion
+}
+
+void genRandomSpheres(std::vector<Objeto*> &objetos, int numSpheres) {
+    // Begin Generate Random spheres
+    srand (time(NULL));
+    int magicUnit;
+    int startZ = -60.0;
+    int factorZ = 4;
+    int spaceX = 50;
+    for (int i = 0; i < numSpheres; i++) {   // numSpheres = 50
+        auto color = vec3((rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0, (rand() % 100 + 1)/100.0);
+        color.max_to_one();
+        int coin = rand() % 2; // coin: [0, 1]
+
+        if (coin == 1) {
+            magicUnit = -1 * coin; // set magicUnit = -1
+        } else {
+            // if coin is 0
+            magicUnit = 1;          // set magicUnit = 1
+        }
+        float theRadio = (rand() % 6) + 3;  // radio: [3, 9]
+        // x = 50 + random_number       (puede ser neegativo o positivo)
+        // z = un valor random y en cada iteración un numero más negativo para el eje z
+        auto p1 = new Esfera(vec3((spaceX*magicUnit) + (rand() % 80)*magicUnit,theRadio,startZ - (i * factorZ)), theRadio, color);
+        p1->setConstantes(0.8, 0.8);
+        p1->ke = 0.8;
+        objetos.emplace_back(p1);
+    }
+    // End Generate Random Spheres
 }

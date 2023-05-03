@@ -213,7 +213,7 @@ void escena2() {
         myFirefly3->centro.y = r * sin(t);
         myFirefly3->centro.y += 50;
         myFirefly4->centro.y = r * sin(t);
-        myFirefly4->centro.y += 10;
+        myFirefly4->centro.y += 20;
 
 
         myFirefly->centro.z = a * cos(t);

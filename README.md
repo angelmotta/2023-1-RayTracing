@@ -8,12 +8,13 @@
 Para modelar este movimiento se utilizó las siguientes ecuaciones paramétricas con la cual 2 luciérnagas realizan un movimiento circular y en el plano XZ y otras 2 realizan un movimiento en el eje Y tal como se muestra en la animación.\
 x = 2 cos(t); 
 y = 2 sin(t);
-z = cos(t)
+z = cos(t)\
+[Ver Aquí](https://github.com/angelmotta/2023-1-RayTracing/blob/89c4eed76a19569694ce4b7ed6884e7370a02d49/main.cpp#L206)
 
 2. Movimiento de la cámara\
    La cámara realiza un acercamiento hacia el origen de 50 unidades en el eje Z (desde 425 hasta 375) durante los primeros 100 frames.
    Posteriormente la cámara se mantiene estática durante 100 frames y luego empieza a elevarse moviéndose en el eje Y 150 unidades (desde 30 hasta 180)
-   Finalmente durante los últimos 240 frames se desplaza 120 unidades hacia la derecha en el X. ([Ver Aqui](https://github.com/angelmotta/2023-1-RayTracing/blob/8da7f54661629aba0893d3a736f24d7329b3f68d/main.cpp#L229)).
+   Finalmente durante los últimos 240 frames se desplaza 120 unidades hacia la derecha en el X. ([Ver Aquí](https://github.com/angelmotta/2023-1-RayTracing/blob/8da7f54661629aba0893d3a736f24d7329b3f68d/main.cpp#L229)).
 
 
 3. Generación de esferas aleatorias.\
